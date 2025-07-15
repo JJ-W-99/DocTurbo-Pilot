@@ -9,6 +9,14 @@ const app = express();
 app.use(morgan('dev'));
 const corsOptions = { origin: '*' };
 app.use(cors(corsOptions));
+// fallback CORS headers for safety
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 // handle preflight requests for all routes
 app.options('*', cors());
 app.use(express.json());
