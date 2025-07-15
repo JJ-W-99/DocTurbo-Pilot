@@ -36,20 +36,30 @@ export default function NewAgreementPage() {
 
   const onSubmit = async (data: FormData) => {
     try {
+      console.log('Submitting to:', `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/agreements`);
+      console.log('Data:', data);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/agreements`, {
         method: 'POST',
         mode: 'cors',
+        credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to submit');
+      console.log('Response status:', res.status);
+      if (!res.ok) {
+        const error = await res.text();
+        console.error('Server error:', error);
+        throw new Error(error || `HTTP ${res.status}: ${res.statusText}`);
+      }
+      const result = await res.json();
+      console.log('Success:', result);
       setSubmitted(true);
     } catch (err) {
-      console.error(err);
-      alert('Submission failed');
+      console.error('Error details:', err);
+      alert(`Submission failed: ${err.message || 'Unknown error'}`);
     }
   };
 
