@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -35,30 +35,69 @@ export default function NewAgreementPage() {
   const [submitted, setSubmitted] = useState(false);
 
   const onSubmit = async (data: FormData) => {
+    const url = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/agreements`;
+    console.log('Environment:', {
+      NODE_ENV: process.env.NODE_ENV,
+      API_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+      FullURL: url
+    });
+    
     try {
-      console.log('Submitting to:', `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/agreements`);
+      console.log('Submitting to:', url);
       console.log('Data:', data);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/agreements`, {
+      
+      // Test if we can reach the server
+      try {
+        const ping = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/ping`);
+        console.log('Ping status:', ping.status, await ping.text());
+      } catch (pingError) {
+        console.error('Ping failed:', pingError);
+      }
+      
+      const startTime = performance.now();
+      const res = await fetch(url, {
         method: 'POST',
         mode: 'cors',
         credentials: 'same-origin',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
         },
         body: JSON.stringify(data),
       });
+      
+      const endTime = performance.now();
+      console.log(`Request took ${(endTime - startTime).toFixed(2)}ms`);
+      
+      // Log response details
       console.log('Response status:', res.status);
+      console.log('Response headers:', Object.fromEntries(res.headers.entries()));
+      
+      const responseText = await res.text();
+      console.log('Response text:', responseText);
+      
       if (!res.ok) {
-        const error = await res.text();
-        console.error('Server error:', error);
-        throw new Error(error || `HTTP ${res.status}: ${res.statusText}`);
+        let errorMessage = responseText || `HTTP ${res.status}: ${res.statusText}`;
+        console.error('Server error response:', {
+          status: res.status,
+          statusText: res.statusText,
+          headers: Object.fromEntries(res.headers.entries()),
+          body: responseText
+        });
+        throw new Error(errorMessage);
       }
-      const result = await res.json();
+      
+      const result = responseText ? JSON.parse(responseText) : {};
       console.log('Success:', result);
       setSubmitted(true);
     } catch (err) {
-      console.error('Error details:', err);
+      console.error('Error details:', {
+        name: err.name,
+        message: err.message,
+        stack: err.stack,
+        cause: err.cause
+      });
       alert(`Submission failed: ${err.message || 'Unknown error'}`);
     }
   };
