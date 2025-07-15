@@ -8,6 +8,8 @@ dotenv.config();
 const app = express();
 app.use(morgan('dev'));
 app.use(cors());
+// handle preflight requests for all routes
+app.options('*', cors());
 app.use(express.json());
 
 app.get('/api/ping', (_, res) => {
