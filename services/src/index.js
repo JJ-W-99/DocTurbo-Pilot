@@ -7,17 +7,17 @@ dotenv.config();
 
 const app = express();
 app.use(morgan('dev'));
-const corsOptions = { origin: '*' };
-// handle CORS preflight requests directly
-app.options('/api/*', (req, res) => {
+// Explicit CORS handling
+app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.sendStatus(204);
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(204);
+  } else {
+    next();
+  }
 });
-
-// handle all other requests with CORS
-app.use(cors(corsOptions));
 // handle preflight requests for all routes
 app.options('*', cors());
 app.use(express.json());
