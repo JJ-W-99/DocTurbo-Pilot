@@ -7,7 +7,8 @@ dotenv.config();
 
 const app = express();
 app.use(morgan('dev'));
-app.use(cors());
+const corsOptions = { origin: '*' };
+app.use(cors(corsOptions));
 // handle preflight requests for all routes
 app.options('*', cors());
 app.use(express.json());
