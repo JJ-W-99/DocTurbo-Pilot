@@ -8,15 +8,16 @@ dotenv.config();
 const app = express();
 app.use(morgan('dev'));
 const corsOptions = { origin: '*' };
-app.use(cors(corsOptions));
-// fallback CORS headers for safety
-app.use((req, res, next) => {
+// handle CORS preflight requests directly
+app.options('/api/*', (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') return res.sendStatus(204);
-  next();
+  res.sendStatus(204);
 });
+
+// handle all other requests with CORS
+app.use(cors(corsOptions));
 // handle preflight requests for all routes
 app.options('*', cors());
 app.use(express.json());
