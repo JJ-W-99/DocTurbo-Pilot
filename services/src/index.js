@@ -12,7 +12,7 @@ app.use(morgan('dev'));
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
   res.header('Access-Control-Max-Age', '86400');
   res.header('Access-Control-Expose-Headers', 'Content-Length, X-Foo, X-Bar');
   
@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 app.options('/api/*', (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
   res.header('Access-Control-Max-Age', '86400');
   res.header('Access-Control-Expose-Headers', 'Content-Length, X-Foo, X-Bar');
   res.sendStatus(204);
@@ -40,7 +40,7 @@ app.options('/api/*', (req, res) => {
 app.options('*', (req, res) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
   res.header('Access-Control-Max-Age', '86400');
   res.header('Access-Control-Expose-Headers', 'Content-Length, X-Foo, X-Bar');
   res.sendStatus(204);
