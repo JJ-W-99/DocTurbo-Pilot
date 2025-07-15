@@ -7,17 +7,47 @@ dotenv.config();
 
 const app = express();
 app.use(morgan('dev'));
-// Explicit CORS handling
+
+// Explicit CORS handling for all routes
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Max-Age', '86400');
+  res.header('Access-Control-Expose-Headers', 'Content-Length, X-Foo, X-Bar');
+  
+  // Handle preflight requests
   if (req.method === 'OPTIONS') {
     res.sendStatus(204);
-  } else {
-    next();
+    return;
   }
+  
+  // Handle CORS for all other requests
+  next();
 });
+
+// Handle OPTIONS explicitly for API routes
+app.options('/api/*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Max-Age', '86400');
+  res.header('Access-Control-Expose-Headers', 'Content-Length, X-Foo, X-Bar');
+  res.sendStatus(204);
+});
+
+// Handle all other OPTIONS requests
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Max-Age', '86400');
+  res.header('Access-Control-Expose-Headers', 'Content-Length, X-Foo, X-Bar');
+  res.sendStatus(204);
+});
+
+// Continue with other middleware
+app.use(express.json());
 // handle preflight requests for all routes
 app.options('*', cors());
 app.use(express.json());
