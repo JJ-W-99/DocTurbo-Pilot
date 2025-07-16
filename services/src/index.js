@@ -78,6 +78,22 @@ app.get('/api/ping', (_, res) => {
 // simple in-memory store for prototype
 // in-memory fallback removed – we now persist to Postgres
 
+// List latest agreements (read-only helper)
+app.get('/api/agreements', async (req, res) => {
+  try {
+    const limit = Number(req.query.limit) || 20;
+    const { rows } = await pool.query(
+      `SELECT id, landlord_name AS "landlordName", tenant_name AS "tenantName", property_address AS "propertyAddress", created_at AS "createdAt" 
+       FROM agreements ORDER BY id DESC LIMIT $1`,
+      [limit]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Database error' });
+  }
+});
+
 app.post('/api/agreements', async (req, res) => {
   const { landlordName, tenantName, propertyAddress } = req.body;
   const errors = {};
