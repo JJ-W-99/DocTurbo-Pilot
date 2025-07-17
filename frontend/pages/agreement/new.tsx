@@ -149,44 +149,6 @@ export default function NewAgreementPage() {
               </button>
             </div>
           </form>
-              <input
-                {...register('landlordName')}
-                className="w-full rounded border px-3 py-2"
-              />
-              {errors.landlordName && (
-                <p className="text-sm text-red-600">{errors.landlordName.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Tenant Name</label>
-              <input
-                {...register('tenantName')}
-                className="w-full rounded border px-3 py-2"
-              />
-              {errors.tenantName && (
-                <p className="text-sm text-red-600">{errors.tenantName.message}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Property Address</label>
-              <input
-                {...register('propertyAddress')}
-                className="w-full rounded border px-3 py-2"
-              />
-              {errors.propertyAddress && (
-                <p className="text-sm text-red-600">{errors.propertyAddress.message}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
-            >
-              Submit
-            </button>
-          </form>
         </FormProvider>
       </div>
     </>
