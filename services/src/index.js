@@ -18,6 +18,13 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
       landlord_name TEXT NOT NULL,
       tenant_name TEXT NOT NULL,
       property_address TEXT NOT NULL,
+      tenancy_type TEXT,
+      lease_start DATE,
+      lease_end DATE,
+      monthly_rent NUMERIC,
+      rent_due_day INT,
+      security_deposit NUMERIC,
+      pet_deposit NUMERIC,
       json_data JSONB NOT NULL,
       created_at TIMESTAMPTZ DEFAULT now()
     );
@@ -105,9 +112,24 @@ app.post('/api/agreements', async (req, res) => {
   }
   try {
     const { rows } = await pool.query(
-      `INSERT INTO agreements (landlord_name, tenant_name, property_address, json_data)
-       VALUES ($1,$2,$3,$4) RETURNING *`,
-      [landlordName, tenantName, propertyAddress, req.body]
+      `INSERT INTO agreements (
+        landlord_name, tenant_name, property_address,
+        tenancy_type, lease_start, lease_end, monthly_rent, rent_due_day,
+        security_deposit, pet_deposit, json_data)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING *`,
+      [
+        landlordName,
+        tenantName,
+        propertyAddress,
+        req.body.tenancyType || null,
+        req.body.leaseStartDate || null,
+        req.body.leaseEndDate || null,
+        req.body.monthlyRent || null,
+        req.body.rentDueDay || null,
+        req.body.securityDepositAmount || null,
+        req.body.petDamageDepositAmount || null,
+        req.body,
+      ]
     );
     return res.status(201).json(rows[0]);
   } catch (err) {

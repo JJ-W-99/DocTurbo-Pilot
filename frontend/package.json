@@ -1,6 +1,10 @@
 {
   "name": "docturbo-frontend",
   "private": true,
+  "volta": {
+    "node": "18.20.8",
+    "npm": "10.8.2"
+  },
   "version": "0.1.0",
   "scripts": {
     "dev": "next dev -p 3000",
