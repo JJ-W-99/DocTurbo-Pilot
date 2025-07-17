@@ -89,9 +89,66 @@ export default function NewAgreementPage() {
       <div className="mx-auto mt-10 max-w-xl">
         <h1 className="mb-6 text-3xl font-bold">BC Rental Agreement</h1>
         <FormProvider {...methods}>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium">Landlord Name</label>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Parties Section */}
+            <details open className="rounded border border-gray-300 p-4">
+              <summary className="cursor-pointer select-none font-medium">
+                Parties
+              </summary>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                <div className="flex flex-col">
+                  <label htmlFor="landlordName" className="text-sm font-medium">Landlord Name</label>
+                  <input
+                    id="landlordName"
+                    {...register('landlordName')}
+                    className={
+                      `w-full rounded border px-3 py-2 focus:outline-none ${errors.landlordName ? 'ring-1 ring-rose-500' : 'ring-1 ring-gray-300 focus:ring-blue-500'}`
+                    }
+                  />
+                  {errors.landlordName && <p className="text-xs text-rose-600 mt-1">{errors.landlordName.message}</p>}
+                </div>
+                <div className="flex flex-col">
+                  <label htmlFor="tenantName" className="text-sm font-medium">Tenant Name</label>
+                  <input
+                    id="tenantName"
+                    {...register('tenantName')}
+                    className={
+                      `w-full rounded border px-3 py-2 focus:outline-none ${errors.tenantName ? 'ring-1 ring-rose-500' : 'ring-1 ring-gray-300 focus:ring-blue-500'}`
+                    }
+                  />
+                  {errors.tenantName && <p className="text-xs text-rose-600 mt-1">{errors.tenantName.message}</p>}
+                </div>
+              </div>
+            </details>
+
+            {/* Property Section */}
+            <details open className="rounded border border-gray-300 p-4">
+              <summary className="cursor-pointer select-none font-medium">Property Details</summary>
+              <div className="mt-4 space-y-4">
+                <div className="flex flex-col">
+                  <label htmlFor="propertyAddress" className="text-sm font-medium">Property Address</label>
+                  <input
+                    id="propertyAddress"
+                    {...register('propertyAddress')}
+                    className={
+                      `w-full rounded border px-3 py-2 focus:outline-none ${errors.propertyAddress ? 'ring-1 ring-rose-500' : 'ring-1 ring-gray-300 focus:ring-blue-500'}`
+                    }
+                  />
+                  {errors.propertyAddress && <p className="text-xs text-rose-600 mt-1">{errors.propertyAddress.message}</p>}
+                </div>
+              </div>
+            </details>
+
+            {/* Submit sticky on mobile */}
+            <div className="sticky bottom-0 bg-white py-4">
+              <button
+                type="submit"
+                className="w-full rounded bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 md:w-auto"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
               <input
                 {...register('landlordName')}
                 className="w-full rounded border px-3 py-2"
