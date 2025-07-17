@@ -1,0 +1,19 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: volta-cli/action@v4
+        with:
+          node-version: "18.20.8"
+          npm-version: "10.8.2"
+      - run: npm ci --no-audit --progress=false
+      - run: NODE_ENV=production npm run build
+      - run: |
+          if find .next/static -type f -size +250k | grep -q .; then
+            echo "❌ Bundle size regression (>250 KB)"; exit 1;
+          else
+            echo "✅ Bundle size OK";
+          fi
