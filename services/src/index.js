@@ -7,13 +7,13 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// PostgreSQL connection
+// Initialize PostgreSQL pool
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
-(async () => {
-  // create table if it doesn't exist
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS agreements (
+// Run lightweight schema migrations on startup (idempotent)
+async function runMigrations() {
+  const statements = [
+    `CREATE TABLE IF NOT EXISTS agreements (
       id SERIAL PRIMARY KEY,
       landlord_name TEXT NOT NULL,
       tenant_name TEXT NOT NULL,
@@ -27,9 +27,28 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
       pet_deposit NUMERIC,
       json_data JSONB NOT NULL,
       created_at TIMESTAMPTZ DEFAULT now()
-    );
-  `);
-})();
+    );`,
+    `ALTER TABLE agreements ADD COLUMN IF NOT EXISTS tenancy_type TEXT;`,
+    `ALTER TABLE agreements ADD COLUMN IF NOT EXISTS lease_start DATE;`,
+    `ALTER TABLE agreements ADD COLUMN IF NOT EXISTS lease_end DATE;`,
+    `ALTER TABLE agreements ADD COLUMN IF NOT EXISTS monthly_rent NUMERIC;`,
+    `ALTER TABLE agreements ADD COLUMN IF NOT EXISTS rent_due_day INT;`,
+    `ALTER TABLE agreements ADD COLUMN IF NOT EXISTS security_deposit NUMERIC;`,
+    `ALTER TABLE agreements ADD COLUMN IF NOT EXISTS pet_deposit NUMERIC;`,
+    `ALTER TABLE agreements ADD COLUMN IF NOT EXISTS json_data JSONB;`
+  ];
+  for (const sql of statements) {
+    try {
+      await pool.query(sql);
+    } catch (err) {
+      console.error('Migration failed for:', sql, err.message);
+    }
+  }
+}
+
+// kick off migrations, but don't block startup
+runMigrations().catch(console.error);
+
 
 const app = express();
 app.use(morgan('dev'));
